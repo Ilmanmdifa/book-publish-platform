@@ -1,0 +1,14 @@
+{
+  "name": "publishing-platform",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix apps/backend\" \"npm run dev --prefix apps/frontend\"",
+    "backend": "npm run dev --prefix apps/backend",
+    "frontend": "npm run dev --prefix apps/frontend"
+  },
+  "keywords": [],
+  "author": "Ilman M Difa",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {}
+}
