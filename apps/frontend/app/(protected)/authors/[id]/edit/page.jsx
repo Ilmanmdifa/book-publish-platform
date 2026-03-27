@@ -1,0 +1,95 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import api from "@/lib/api";
+
+export default function EditAuthor() {
+  const [name, setName] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const router = useRouter();
+  const { id } = useParams();
+
+  useEffect(() => {
+    const loadAuthor = async () => {
+      setFetching(true);
+      try {
+        const res = await api.authors.getById(id);
+        setName(res.data.data.name);
+      } catch (err) {
+        setError("Failed to load author");
+      } finally {
+        setFetching(false);
+      }
+    };
+    if (id) loadAuthor();
+  }, [id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      await api.authors.update(id, name);
+      router.push("/authors");
+    } catch (err) {
+      setError(err.response?.data?.error || "Update failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (fetching) return <p>Loading...</p>;
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-bold mb-6 text-black/80">Edit Author</h1>
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-gray-700 font-medium mb-2">
+              Author Name
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Author name"
+              className="w-full border border-gray-300 px-4 py-2 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-blue-500 text-white font-semibold py-3 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+            >
+              {loading ? "Updating..." : "Update Author"}
+            </button>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="flex-1 bg-gray-400 text-white font-semibold py-3 rounded-lg hover:bg-gray-500 transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
