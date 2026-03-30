@@ -71,4 +71,4 @@ Postman: `/postman/publishing-platform.postman_collection.json`
 
 ## 👨‍💻 Author
 
-my name
+Ilman M Difa
